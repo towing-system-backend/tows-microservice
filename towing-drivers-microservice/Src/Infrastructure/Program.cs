@@ -1,20 +1,59 @@
 using Application.Core;
 using DotNetEnv;
+using MassTransit;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Tow.Domain;
+using Tow.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 Env.Load();
 
+builder.Services.AddSingleton<MongoTowRepository>();
 builder.Services.AddSingleton<MongoEventStore>();
-
-builder.Services.AddScoped<IEventStore, MongoEventStore>();
 builder.Services.AddScoped<IdService<string>, GuidGenerator>();
+builder.Services.AddScoped<IMessageBrokerService, RabbitMQService>();
+builder.Services.AddScoped<IEventStore, MongoEventStore>();
+builder.Services.AddScoped<ITowRepository, MongoTowRepository>();
+builder.Services.AddControllers(options => {
+    options.Filters.Add<GlobalExceptionFilter>();
+});
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new() { Title = "TowDriver API", Version = "v1" });
+    c.SwaggerDoc("v1", new() { Title = "Tow API", Version = "v1" });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
+    {
+        options.Authority = Environment.GetEnvironmentVariable("API_GATEWAY_URL")!;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            ValidateLifetime = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET")!))
+        };
+    });
+
+builder.Services.AddMassTransit(busConfigurator =>
+{
+    busConfigurator.SetKebabCaseEndpointNameFormatter();
+    busConfigurator.UsingRabbitMq((context, configurator) =>
+    {
+        configurator.Host(new Uri(Environment.GetEnvironmentVariable("RABBITMQ_URI")!), h =>
+        {
+            h.Username(Environment.GetEnvironmentVariable("RABBITMQ_USERNAME")!);
+            h.Password(Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD")!);
+        });
+
+        configurator.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
+        configurator.ConfigureEndpoints(context);
+    });
+});
 
 var app = builder.Build();
 
@@ -33,7 +72,7 @@ app.UseSwagger(c =>
 
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "TowDriver v1");
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tow v1");
     c.RoutePrefix = string.Empty;
 });
 
