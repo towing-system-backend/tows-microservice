@@ -17,9 +17,6 @@ namespace Tow.Domain
                     sizeType.GetValue()
                 )
             );
-
         }
     }
-
-
 }

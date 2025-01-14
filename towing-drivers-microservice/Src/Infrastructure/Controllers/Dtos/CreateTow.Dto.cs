@@ -3,6 +3,7 @@
 namespace Tow.Infrastructure
 {
     public record  CreateTowDto(
+
         [Required]
         [StringLength(20, MinimumLength = 3)]
         string Brand,
@@ -16,11 +17,15 @@ namespace Tow.Infrastructure
         [RegularExpression(@"^[A-Z]{3}[0-9]{3}$")]
         string LicensePlate,
         [Required]
+        [StringLength(40, MinimumLength = 3)]
+        string Location,
+        [Required]
         int Year,
         [Required]
         [RegularExpression(@"^(Small|Medium|Large)$", ErrorMessage = "SizeType must be 'Small', 'Medium', or 'Large'")]
         string SizeType,
         [Required]
         [RegularExpression(@"^(Active|Inactive)$", ErrorMessage = "Status must be 'Active' or 'Inactive'")]
-        string Status);
+        string Status
+    );
 }

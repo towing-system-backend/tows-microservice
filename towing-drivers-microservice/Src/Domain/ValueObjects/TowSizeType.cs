@@ -4,7 +4,7 @@ namespace Tow.Domain
 {
     public class TowSizeType : IValueObject<TowSizeType>
     {
-        private readonly string Value;
+        private readonly string _value;
 
         private static readonly string[] ValidSizes = { "Small", "Medium", "Large" };
 
@@ -14,15 +14,14 @@ namespace Tow.Domain
             {
                 throw new InvalidTowSizeTypeException();
             }
-            Value = value;
+            _value = value;
         }
 
         private static bool IsValidSize(string value)
         {
             return Array.Exists(ValidSizes, size => size.Equals(value, StringComparison.OrdinalIgnoreCase));
         }
-        public string GetValue() => Value;
-
-        public bool Equals(TowSizeType other) => Value == other.Value;
+        public string GetValue() => _value;
+        public bool Equals(TowSizeType other) => _value == other._value;
     }
 }

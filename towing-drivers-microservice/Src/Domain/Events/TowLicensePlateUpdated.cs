@@ -3,6 +3,7 @@
 namespace Tow.Domain
 {
     public class TowLicensePlateUpdatedEvent(string publisherId, string type, TowLicensePlateUpdated context) : DomainEvent(publisherId, type, context) { }
+
     public class TowLicensePlateUpdated(string licensePlate)
     {
         public readonly string LicensePlate = licensePlate;
@@ -16,7 +17,6 @@ namespace Tow.Domain
                     licensePlate.GetValue()
                 )
             );
-
         }
     }
 }

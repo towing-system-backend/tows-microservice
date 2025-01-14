@@ -15,7 +15,7 @@ namespace Tow.Application
             var response = await _towRepository.FindByLicensePlate(command.LicensePlate);
             if (response.HasValue())
             {
-                return Result<CreateTowResponse>.MakeError(new TowAlreadyExistException());
+                return Result<CreateTowResponse>.MakeError(new TowAlreadyExistExceptionError());
             }
             var id = _idService.GenerateId();
             var tow = Tow.Create(
@@ -24,17 +24,16 @@ namespace Tow.Application
                 new TowModel(command.Model),
                 new TowColor(command.Color),
                 new TowLicensePlate(command.LicensePlate),
+                new TowLocation(command.Location),
                 new TowYear(command.Year),
                 new TowSizeType(command.SizeType),
                 new TowStatus(command.Status)
-
             );
 
             await _towRepository.Save(tow);
             var events = tow.PullEvents();
             await _eventStore.AppendEvents(events);
             await _messageBrokerService.Publish(events);
-
 
             return Result<CreateTowResponse>.MakeSuccess(new CreateTowResponse(id));
         }

@@ -4,62 +4,95 @@ namespace Tow.Domain
 {
     public class Tow : AggregateRoot<TowId>
     {
-        private new TowId Id;
-        private TowBrand Brand;
-        private TowModel Model;
-        private TowColor Color;
-        private TowLicensePlate LicensePlate;
-        private TowYear Year;
-        private TowSizeType SizeType;
-        private TowStatus Status;
+        private new TowId _id;
+        private TowBrand _towBrand;
+        private TowModel _towModel;
+        private TowColor _towColor;
+        private TowLicensePlate _towLicensePlate;
+        private TowLocation _towLocation;
+        private TowYear _towYear;
+        private TowSizeType _towSizeType;
+        private TowStatus _towStatus;
 
         public Tow(TowId towId) : base(towId)
         {
-            Id = towId;
+            _id = towId;
         }
         public override void ValidateState()
         {
             if (
                 Id == null ||
-                Brand == null || 
-                Model == null || 
-                Color == null || 
-                LicensePlate == null ||
-                Year == null ||
-                SizeType == null ||
-                Status == null)
+                _towBrand == null ||
+                _towModel == null ||
+                _towColor == null ||
+                _towLicensePlate == null ||
+                _towLocation == null ||
+                _towYear == null ||
+                _towSizeType == null ||
+                _towStatus == null)
             {
                 throw new InvalidTowException();
             }
         }
-        public TowId GetTowId() => Id;
-        public TowBrand GetTowBrand() => Brand;
-        public TowModel GetTowModel() => Model;
-        public TowColor GetTowColor() => Color;
-        public TowLicensePlate GetTowLicensePlate() => LicensePlate;
-        public TowYear GetTowYear() => Year;
-        public TowSizeType GetTowSizeType() => SizeType;
-        public TowStatus GetTowStatus() => Status;
+        public TowId GetTowId() => _id;
 
-        public static Tow Create(TowId towId, TowBrand brand, TowModel model, TowColor color, TowLicensePlate licensePlate, TowYear year, TowSizeType sizeType, TowStatus status, bool fromPersistence = false)
+        public TowBrand GetTowBrand() => _towBrand;
+
+        public TowModel GetTowModel() => _towModel;
+
+        public TowColor GetTowColor() => _towColor;
+
+        public TowLicensePlate GetTowLicensePlate() => _towLicensePlate;
+
+        public TowLocation GetTowLocation() => _towLocation;
+
+        public TowYear GetTowYear() => _towYear;
+
+        public TowSizeType GetTowSizeType() => _towSizeType;
+
+        public TowStatus GetTowStatus() => _towStatus;
+
+        public static Tow Create(
+            TowId towId, 
+            TowBrand brand, 
+            TowModel model, 
+            TowColor color, 
+            TowLicensePlate licensePlate, 
+            TowLocation location,
+            TowYear year, 
+            TowSizeType sizeType, 
+            TowStatus status, 
+            bool fromPersistence = false)
         {
             
             if (fromPersistence)
             {
                 return new Tow(towId)
                 {
-                    Id = towId,
-                    Brand = brand,
-                    Model = model,
-                    Color = color,
-                    LicensePlate = licensePlate,
-                    Year = year,
-                    SizeType = sizeType,
-                    Status = status
+                    _id = towId,
+                    _towBrand = brand,
+                    _towModel = model,
+                    _towColor = color,
+                    _towLicensePlate = licensePlate,
+                    _towLocation = location,
+                    _towYear = year,
+                    _towSizeType = sizeType,
+                    _towStatus = status
                 };
             }
             var tow = new Tow(towId);
-            tow.Apply(TowCreated.CreateEvent(towId, brand, model, color, licensePlate, year, sizeType, status));
+            tow.Apply(TowCreated.CreateEvent(
+                towId,
+                brand, 
+                model, 
+                color, 
+                licensePlate, 
+                location,
+                year, 
+                sizeType, 
+                status
+               )
+            );
 
             return tow;
         }
@@ -84,6 +117,11 @@ namespace Tow.Domain
             Apply(TowLicensePlateUpdated.CreateEvent(Id, licensePlate));
         }
 
+        public void UpdateTowLocation(TowLocation location)
+        {
+            Apply(TowLocationUpdated.CreateEvent(Id, location));
+        }
+
         public void UpdateTowYear(TowYear year)
         {
             Apply(TowYearUpdated.CreateEvent(Id, year));
@@ -101,50 +139,55 @@ namespace Tow.Domain
 
         private void OnTowCreatedEvent(TowCreated context)
         {
-            Id = new TowId(context.Id);
-            Brand = new TowBrand(context.Brand);
-            Model = new TowModel(context.Model);
-            Color = new TowColor(context.Color);
-            LicensePlate = new TowLicensePlate(context.LicensePlate);
-            Year = new TowYear(context.Year);
-            SizeType = new TowSizeType(context.SizeType);
-            Status = new TowStatus(context.Status);
+            _id = new TowId(context.Id);
+            _towBrand = new TowBrand(context.Brand);
+            _towModel = new TowModel(context.Model);
+            _towColor = new TowColor(context.Color);
+            _towLicensePlate = new TowLicensePlate(context.LicensePlate);
+            _towLocation = new TowLocation(context.Location);
+            _towYear = new TowYear(context.Year);
+            _towSizeType = new TowSizeType(context.SizeType);
+            _towStatus = new TowStatus(context.Status);
         }
 
         private void OnTowBrandUpdatedEvent(TowBrandUpdated context)
         {
-            Brand = new TowBrand(context.Brand);
+            _towBrand = new TowBrand(context.Brand);
         }
 
         private void OnTowModelUpdatedEvent(TowModelUpdated context)
         {
-            Model = new TowModel(context.Model);
+            _towModel = new TowModel(context.Model);
         }
 
         private void OnTowColorUpdatedEvent(TowColorUpdated context)
         {
-            Color = new TowColor(context.Color);
+            _towColor = new TowColor(context.Color);
         }
 
         private void OnTowLicensePlateUpdatedEvent(TowLicensePlateUpdated context)
         {
-            LicensePlate = new TowLicensePlate(context.LicensePlate);
+            _towLicensePlate = new TowLicensePlate(context.LicensePlate);
+        }
+
+        private void OnTowLocationEvent(TowLocationUpdated context)
+        {
+            _towLocation = new TowLocation(context.Location);
         }
 
         private void OnTowYearUpdatedEvent(TowYearUpdated context)
         {
-            Year = new TowYear(context.Year);
+            _towYear = new TowYear(context.Year);
         }
 
         private void OnTowSizeTypeUpdateEvent(TowSizeTypeUpdate context)
         {
-            SizeType = new TowSizeType(context.SizeType);
+            _towSizeType = new TowSizeType(context.SizeType);
         }
 
         private void OnTowStatusUpdatedEvent(TowStatusUpdated context)
         {
-            Status = new TowStatus(context.Status);
+            _towStatus = new TowStatus(context.Status);
         }
-
     }
 }

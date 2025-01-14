@@ -4,17 +4,17 @@ namespace Tow.Domain
 {
     public class TowId : IValueObject<TowId>
     {
-        private readonly string Value;
+        private readonly string _value;
+
         public TowId(string value)
         {
             if (!GuidEx.IsGuid(value))
             {
                 throw new InvalidTowIdException();
             }
-            Value = value;
+            _value = value;
         }
-        public string GetValue() => Value;
-
-        public bool Equals(TowId other) => Value == other.Value;
+        public string GetValue() => _value;
+        public bool Equals(TowId other) => _value == other._value;
     }
 }

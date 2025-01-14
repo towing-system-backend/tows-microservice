@@ -4,7 +4,7 @@ namespace Tow.Domain
 {
     public class TowLicensePlate : IValueObject<TowLicensePlate>
     {
-        private readonly string Value;
+        private readonly string _value;
 
         public TowLicensePlate(string value)
         {
@@ -13,10 +13,9 @@ namespace Tow.Domain
                 throw new InvalidTowLicensePlateException();
             }
 
-            Value = value;
+            _value = value;
         }
-        public string GetValue() => Value;
-
-        public bool Equals(TowLicensePlate other) => Value == other.Value;
+        public string GetValue() => _value;
+        public bool Equals(TowLicensePlate other) => _value == other._value;
     }
 }

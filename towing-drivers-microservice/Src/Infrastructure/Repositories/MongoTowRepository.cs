@@ -16,7 +16,7 @@ namespace Tow.Infrastructure
         }
         public async Task<IsOptional> FindById(string id)
         {
-            var filter = Builders<MongoTow>.Filter.Eq(tow => tow.towId, id);
+            var filter = Builders<MongoTow>.Filter.Eq(tow => tow.TowId, id);
             var res = await _towCollection.Find(filter).FirstOrDefaultAsync();
 
             if (res == null)
@@ -26,14 +26,15 @@ namespace Tow.Infrastructure
 
             return IsOptional.Of(
                 Domain.Tow.Create(
-                    new TowId(res.towId),
-                    new TowBrand(res.brand),
-                    new TowModel(res.model),
-                    new TowColor(res.color),
-                    new TowLicensePlate(res.licenPlate),
-                    new TowYear(res.year),
-                    new TowSizeType(res.sizeType),
-                    new TowStatus(res.status),
+                    new TowId(res.TowId),
+                    new TowBrand(res.Brand),
+                    new TowModel(res.Model),
+                    new TowColor(res.Color),
+                    new TowLicensePlate(res.LicensePlate),
+                    new TowLocation(res.Location),
+                    new TowYear(res.Year),
+                    new TowSizeType(res.SizeType),
+                    new TowStatus(res.Status),
                     true
                    
                 )
@@ -42,7 +43,7 @@ namespace Tow.Infrastructure
 
         public async Task<IsOptional> FindByLicensePlate(string licensePlate)
         {
-            var filter = Builders<MongoTow>.Filter.Eq(tow => tow.licenPlate, licensePlate);
+            var filter = Builders<MongoTow>.Filter.Eq(tow => tow.LicensePlate, licensePlate);
             var res = await _towCollection.Find(filter).FirstOrDefaultAsync();
             
             if (res == null)
@@ -52,14 +53,15 @@ namespace Tow.Infrastructure
 
             return IsOptional.Of(
                 Domain.Tow.Create(
-                    new TowId(res.towId),
-                    new TowBrand(res.brand),
-                    new TowModel(res.model),
-                    new TowColor(res.color),
-                    new TowLicensePlate(res.licenPlate),
-                    new TowYear(res.year),
-                    new TowSizeType(res.sizeType),
-                    new TowStatus(res.status),
+                    new TowId(res.TowId),
+                    new TowBrand(res.Brand),
+                    new TowModel(res.Model),
+                    new TowColor(res.Color),
+                    new TowLicensePlate(res.LicensePlate),
+                    new TowLocation(res.Location),
+                    new TowYear(res.Year),
+                    new TowSizeType(res.SizeType),
+                    new TowStatus(res.Status),
                     true
                 )
             );
@@ -67,22 +69,25 @@ namespace Tow.Infrastructure
 
         public async Task Save(Domain.Tow tow)
         {
-            var filter = Builders<MongoTow>.Filter.Eq(tow => tow.towId, tow.GetTowId().GetValue());
+            
+            var filter = Builders<MongoTow>.Filter.Eq(tow => tow.TowId, tow.GetTowId().GetValue());
             var update = Builders<MongoTow>.Update
-                .Set(account => account.brand, tow.GetTowBrand().GetValue())
-                .Set(account => account.model, tow.GetTowModel().GetValue())
-                .Set(account => account.color, tow.GetTowColor().GetValue())
-                .Set(account => account.licenPlate, tow.GetTowLicensePlate().GetValue())
-                .Set(account => account.year, tow.GetTowYear().GetValue())
-                .Set(account => account.sizeType, tow.GetTowSizeType().GetValue())
-                .Set(account => account.status, tow.GetTowStatus().GetValue());
+                .Set(account => account.Brand, tow.GetTowBrand().GetValue())
+                .Set(account => account.Model, tow.GetTowModel().GetValue())
+                .Set(account => account.Color, tow.GetTowColor().GetValue())
+                .Set(account => account.LicensePlate, tow.GetTowLicensePlate().GetValue())
+                .Set(account => account.Location, tow.GetTowLocation().GetValue())
+                .Set(account => account.Year, tow.GetTowYear().GetValue())
+                .Set(account => account.SizeType, tow.GetTowSizeType().GetValue())
+                .Set(account => account.Status, tow.GetTowStatus().GetValue())
+                .SetOnInsert(tow => tow.CreatedAt, DateTime.Now);
 
             await _towCollection.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
         }
 
         public async Task Remove(string id)
         {
-            var filter = Builders<MongoTow>.Filter.Eq(tow => tow.towId, id);
+            var filter = Builders<MongoTow>.Filter.Eq(tow => tow.TowId, id);
             await _towCollection.DeleteOneAsync(filter);
         }
     }

@@ -17,7 +17,6 @@ namespace Tow.Domain
                     brand.GetValue()
                 )
             );
-
         }
     }
 }

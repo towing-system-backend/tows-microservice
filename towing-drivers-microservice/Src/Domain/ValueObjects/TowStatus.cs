@@ -4,7 +4,7 @@ namespace Tow.Domain
 {
     public class TowStatus : IValueObject<TowStatus>
     {
-        private readonly string Value;
+        private readonly string _value;
 
         private static readonly string[] ValidStatuses = { "Active", "Inactive" };
 
@@ -14,7 +14,7 @@ namespace Tow.Domain
             {
                 throw new InvalidTowStatusException();
             }
-            Value = value;
+            _value = value;
         }
 
         private static bool IsValidStatus(string value)
@@ -22,8 +22,7 @@ namespace Tow.Domain
             return Array.Exists(ValidStatuses, status => status.Equals(value, StringComparison.OrdinalIgnoreCase));
         }
 
-        public string GetValue() => Value;
-     
-        public bool Equals(TowStatus other) => Value == other.Value;
+        public string GetValue() => _value;
+        public bool Equals(TowStatus other) => _value == other._value;
     }
 }

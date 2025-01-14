@@ -4,7 +4,7 @@ namespace Tow.Domain
 {
     public class TowColor : IValueObject<TowColor>
     {
-        private readonly string Value;
+        private readonly string _value;
 
         public TowColor(string value)
         {
@@ -13,10 +13,9 @@ namespace Tow.Domain
                 throw new InvalidTowColorException();
 
             }
-            Value = value;
+            _value = value;
         }
-        public string GetValue() => Value;
-
-        public bool Equals(TowColor other) => Value == other.Value;
+        public string GetValue() => _value;
+        public bool Equals(TowColor other) => _value == other._value;
     }
 }

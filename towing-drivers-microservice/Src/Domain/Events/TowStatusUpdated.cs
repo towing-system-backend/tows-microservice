@@ -3,6 +3,7 @@
 namespace Tow.Domain
 {
     public class TowStatusUpdatedEvent(string publisherId, string type, TowStatusUpdated context) : DomainEvent(publisherId, type, context) { }
+
     public class TowStatusUpdated(string status)
     {
         public readonly string Status = status;
@@ -16,8 +17,6 @@ namespace Tow.Domain
                     status.GetValue()
                 )
             );
-
         }
     }
-
 }

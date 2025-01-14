@@ -4,7 +4,7 @@ namespace Tow.Domain
 {
     public class TowBrand : IValueObject<TowBrand>
     {
-        private readonly string Value;
+        private readonly string _value;
 
         public TowBrand(string value)
         {
@@ -13,11 +13,9 @@ namespace Tow.Domain
                 throw new InvalidTowBrandException();
 
             }
-            Value = value;
+            _value = value;
         }
-        
-        public string GetValue() => Value;
-
-        public bool Equals(TowBrand other) => Value == other.Value;
+        public string GetValue() => _value;
+        public bool Equals(TowBrand other) => _value == other._value;
     }
 }

@@ -4,7 +4,7 @@ namespace Tow.Domain
 {
     public class TowYear : IValueObject<TowYear>
     {
-        private readonly int Value;
+        private readonly int _value;
 
         public TowYear(int value)
         {
@@ -13,10 +13,9 @@ namespace Tow.Domain
                 throw new InvalidTowYearException();
             }
 
-            Value = value;
+            _value = value;
         }
-        public int GetValue() => Value;
-
-        public bool Equals(TowYear other) => Value == other.Value;
+        public int GetValue() => _value;
+        public bool Equals(TowYear other) => _value == other._value;
     }
 }

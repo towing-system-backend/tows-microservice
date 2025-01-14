@@ -8,12 +8,14 @@ namespace Tow.Infrastructure
 
     [ApiController]
     [Route("api/tow")]
-    public class TowController(IdService<string> idService, IMessageBrokerService messageBrokerService,  IEventStore eventStore, ITowRepository towRepository) : ControllerBase
+    public class TowController(IdService<string> idService, Logger logger, IMessageBrokerService messageBrokerService,  IEventStore eventStore, ITowRepository towRepository, IPerformanceLogsRepository performanceLogsRepository) : ControllerBase
     {
         private readonly IdService<string> _idService = idService;
+        private readonly Logger _logger = logger;
         private readonly IMessageBrokerService _messageBrokerService = messageBrokerService;
         private readonly IEventStore _eventStore = eventStore;
         private readonly ITowRepository _towRepository = towRepository;
+        private readonly IPerformanceLogsRepository _performanceLogsRepository = performanceLogsRepository;
 
         [HttpPost("create")]
         public async Task<ObjectResult> CreateTow([FromBody] CreateTowDto createTowDto)
@@ -23,6 +25,7 @@ namespace Tow.Infrastructure
                 createTowDto.Model,
                 createTowDto.Color,
                 createTowDto.LicensePlate,
+                createTowDto.Location,
                 createTowDto.Year,
                 createTowDto.SizeType,
                 createTowDto.Status
@@ -32,8 +35,8 @@ namespace Tow.Infrastructure
                 new ExceptionCatcher<CreateTowCommand, CreateTowResponse>(
                     new PerfomanceMonitor<CreateTowCommand, CreateTowResponse>(
                         new LoggingAspect<CreateTowCommand, CreateTowResponse>(
-                            new CreateTowCommandHandler(_idService, _messageBrokerService, _eventStore, _towRepository)
-                        )
+                            new CreateTowCommandHandler(_idService, _messageBrokerService, _eventStore, _towRepository), _logger
+                        ), _logger, _performanceLogsRepository, nameof(CreateTowCommandHandler), "Write"
                     ), ExceptionParse.Parse
                 );
 
@@ -52,6 +55,7 @@ namespace Tow.Infrastructure
                 updateTowDto.Model,
                 updateTowDto.Color,
                 updateTowDto.LicensePlate,
+                updateTowDto.Location,
                 updateTowDto.Year,
                 updateTowDto.SizeType,
                 updateTowDto.Status
@@ -61,14 +65,31 @@ namespace Tow.Infrastructure
                  new ExceptionCatcher<UpdateTowCommand, UpdateTowResponse>(
                     new PerfomanceMonitor<UpdateTowCommand, UpdateTowResponse>(
                         new LoggingAspect<UpdateTowCommand, UpdateTowResponse>(
-                            new UpdateTowCommandHandler(_messageBrokerService, _eventStore, _towRepository)
-                        )
+                            new UpdateTowCommandHandler(_messageBrokerService, _eventStore, _towRepository), _logger
+                        ), _logger, _performanceLogsRepository, nameof(CreateTowCommandHandler), "Write"
                     ), ExceptionParse.Parse
                 );
 
             var res = await handler.Execute(command);
 
             return Ok(res.Unwrap());  
+        }
+
+        [HttpGet("find/AllTow")]
+        public async Task<ObjectResult> FindAllTow()
+        {
+            var handler = new FindAllTowQuery();
+            var res = await handler.Execute("");
+            return Ok(res.Unwrap());
+        }
+
+        [HttpGet("find/{Id}")]
+        public async Task<ObjectResult> FindTowById(string Id)
+        {
+            var query = new FindTowByIdDto(Id);
+            var handler = new FindTowByIdQuery();
+            var res = await handler.Execute(query);
+            return Ok(res.Unwrap());
         }
     }
 }
