@@ -1,20 +1,17 @@
 using Application.Core;
 using DotNetEnv;
+using Tow.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 Env.Load();
 
-builder.Services.AddSingleton<MongoEventStore>();
-
-builder.Services.AddScoped<IEventStore, MongoEventStore>();
-builder.Services.AddScoped<IdService<string>, GuidGenerator>();
-
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new() { Title = "TowDriver API", Version = "v1" });
+builder.Services.ConfigureServices();
+builder.Services.ConfigureAuthentication(builder.Configuration);
+builder.Services.ConfigureMassTransit(builder.Configuration);
+builder.Services.AddControllers(options => {
+    options.Filters.Add<GlobalExceptionFilter>();
 });
-
-builder.Services.AddControllers();
+builder.Services.AddSwagger();
 
 var app = builder.Build();
 
@@ -23,22 +20,12 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
-app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseRouting();
 app.UseAuthorization();
-app.UseSwagger(c =>
-{
-    c.SerializeAsV2 = true;
-});
-
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "TowDriver v1");
-    c.RoutePrefix = string.Empty;
-});
+app.UseSwagger();
 
 app.MapGet("api/towdriver/health", () => Results.Ok("ok"));
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
