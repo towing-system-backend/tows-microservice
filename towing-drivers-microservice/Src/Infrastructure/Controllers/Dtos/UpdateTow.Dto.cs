@@ -5,6 +5,7 @@ namespace Tow.Infrastructure
     public record UpdateTowDto(
 
         [Required]
+        [RegularExpression(@"^([0-9A-Fa-f]{8}[-]?[0-9A-Fa-f]{4}[-]?[0-9A-Fa-f]{4}[-]?[0-9A-Fa-f]{4}[-]?[0-9A-Fa-f]{12})$", ErrorMessage = "Id must be a 'Guid'.")]
         string Id,
         [StringLength(20, MinimumLength = 3)]
         string? Brand,
@@ -21,5 +22,5 @@ namespace Tow.Infrastructure
         string? SizeType,
         [RegularExpression(@"^(Active|Inactive)$", ErrorMessage = "Status must be 'Active' or 'Inactive'")]
         string? Status
-    );
+    ): IDto;
 }

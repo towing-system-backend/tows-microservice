@@ -82,14 +82,5 @@ namespace Tow.Infrastructure
             var res = await handler.Execute("");
             return Ok(res.Unwrap());
         }
-
-        [HttpGet("find/{Id}")]
-        public async Task<ObjectResult> FindTowById(string Id)
-        {
-            var query = new FindTowByIdDto(Id);
-            var handler = new FindTowByIdQuery();
-            var res = await handler.Execute(query);
-            return Ok(res.Unwrap());
-        }
     }
 }
