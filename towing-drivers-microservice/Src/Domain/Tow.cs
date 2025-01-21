@@ -129,7 +129,7 @@ namespace Tow.Domain
 
         public void UpdateTowSizeType(TowSizeType sizeType)
         {
-            Apply(TowSizeTypeUpdate.CreateEvent(Id, sizeType));
+            Apply(TowSizeTypeUpdated.CreateEvent(Id, sizeType));
         }
 
         public void UpdateTowStatus(TowStatus status)
@@ -170,7 +170,7 @@ namespace Tow.Domain
             _towLicensePlate = new TowLicensePlate(context.LicensePlate);
         }
 
-        private void OnTowLocationEvent(TowLocationUpdated context)
+        private void OnTowLocationUpdatedEvent(TowLocationUpdated context)
         {
             _towLocation = new TowLocation(context.Location);
         }
@@ -180,7 +180,7 @@ namespace Tow.Domain
             _towYear = new TowYear(context.Year);
         }
 
-        private void OnTowSizeTypeUpdateEvent(TowSizeTypeUpdate context)
+        private void OnTowSizeTypeUpdatedEvent(TowSizeTypeUpdated context)
         {
             _towSizeType = new TowSizeType(context.SizeType);
         }

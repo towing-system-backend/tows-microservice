@@ -43,7 +43,7 @@ namespace Tow.Extensions
         {
             services.AddMassTransit(busConfigurator =>
             {
-                busConfigurator.AddConsumer<CreateTowConsumer>();
+               
                 busConfigurator.SetKebabCaseEndpointNameFormatter();
                 busConfigurator.UsingRabbitMq((context, configurator) =>
                 {

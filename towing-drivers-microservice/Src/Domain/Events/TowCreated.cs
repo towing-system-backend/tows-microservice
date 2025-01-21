@@ -25,7 +25,7 @@ namespace Tow.Domain
         public readonly string SizeType = sizeType;
         public readonly string Status = status;
 
-        static public TowCreatedEvent CreateEvent(
+        public static TowCreatedEvent CreateEvent(
             TowId publisherId, 
             TowBrand brand, 
             TowModel model, 
