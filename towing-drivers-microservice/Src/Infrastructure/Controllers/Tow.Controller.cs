@@ -82,5 +82,13 @@ namespace Tow.Infrastructure
             var res = await handler.Execute("");
             return Ok(res.Unwrap());
         }
+        
+        [HttpGet("find/active/tow")]
+        public async Task<ObjectResult> FindActiveTow()
+        {
+            var handler = new FindActiveTowsQuery();
+            var res = await handler.Execute();
+            return Ok(res.Unwrap());
+        }
     }
 }
